@@ -1,1 +1,1 @@
-# Digital-dMaze
+# dMaze
