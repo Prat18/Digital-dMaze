@@ -24,7 +24,7 @@ contract dMaze{
         require(height >= 7);
         
         while(x < width * height) {
-            maze[x] = 1;
+            maze.push(1);
             x++;
         }
         
