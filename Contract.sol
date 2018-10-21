@@ -1,21 +1,31 @@
 pragma solidity ^0.4.19;
 
-contract cryptaMaze{
+contract dMaze{
     
     uint256[] maze;
     uint256 nonce = 0;
-    uint x;
+    uint x = 0;
     uint y;
     
-    function generateMaze(uint width, uint height) public returns(uint[]) {
+    mapping (uint => address) addressToPlayerId;
+    
+    struct playerInfo {
+        string name;
+        uint age;
+    }
+    
+    playerInfo[] players;
+    
+    function generateMaze(uint width, uint height, string name, uint age) public returns(uint[], uint, uint) {
         width = width * 3 + 2;
         height = height * 3 + 2;
         
         require(width >= 7);
         require(height >= 7);
         
-        for(x = 0; x < width * height; x++) {
+        while(x < width * height) {
             maze[x] = 1;
+            x++;
         }
         
         maze[1 * width + 1] = 0;
@@ -25,11 +35,16 @@ contract cryptaMaze{
                 carveMaze(maze, width, height, x, y, nonce);
             }
         }
+       
+        uint start = 0 * width + 1;
+        uint finish = (height - 1) * width + (width - 2);
+         
+        maze[start] = 0;
+        maze[finish] = 0;
         
-        maze[0 * width + 1] = 0;
-        maze[(height - 1) * width + (width - 2)] = 0;
+        registerPlayer(name, age);
         
-        return maze;
+        return (maze, start, finish);
     }
     
     function carveMaze(uint[] maze,uint width,uint height,uint x,uint y, uint nonce) public {        
@@ -84,16 +99,8 @@ contract cryptaMaze{
         }
     }
     
-    function spawnPlayer() public {
-        
+    function registerPlayer(string name, uint age) public {
+        uint id = players.push(playerInfo(name, age)) - 1;
+        addressToPlayerId[id] = msg.sender;
     }
-    
-    function trackPlayer() public {
-        
-    }
-    
-    function sendMazeData() public {
-        
-    }
-
 }
