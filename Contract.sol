@@ -1,22 +1,36 @@
 pragma solidity ^0.4.19;
 
-contract dMaze{
+import "./ERC20.sol";
+
+contract dMaze is Token {
     
     uint256[] maze;
     uint256 nonce = 0;
     uint x = 0;
     uint y;
     
-    mapping (uint => address) addressToPlayerId;
+    mapping (address => uint) addressToPlayerId;
     
     struct playerInfo {
         string name;
         uint age;
+        uint winCount;
     }
     
     playerInfo[] players;
     
-    function generateMaze(uint width, uint height, string name, uint age) public returns(uint[], uint, uint) {
+    function registerPlayer(string name, uint age) constant public returns(bool) {
+        uint id = players.push(playerInfo(name, age, 0)) - 1;
+        addressToPlayerId[msg.sender] = id;
+        return true;
+    }
+    
+    function displayProfile() constant public returns (string, uint, uint) {
+        uint id = addressToPlayerId[msg.sender];
+        return (players[id].name, players[id].age, players[id].winCount);
+    }
+    
+    function generateMaze(uint width, uint height, string name, uint age) constant public returns(uint[], uint, uint) {
         width = width * 3 + 2;
         height = height * 3 + 2;
         
@@ -47,7 +61,7 @@ contract dMaze{
         return (maze, start, finish);
     }
     
-    function carveMaze(uint[] maze,uint width,uint height,uint x,uint y, uint nonce) public {        
+    function carveMaze(uint[] maze,uint width,uint height,uint x,uint y, uint nonce) constant public {        
         uint dir;
         int x1;
         int y1;
@@ -97,10 +111,5 @@ contract dMaze{
             }
             
         }
-    }
-    
-    function registerPlayer(string name, uint age) public {
-        uint id = players.push(playerInfo(name, age)) - 1;
-        addressToPlayerId[id] = msg.sender;
     }
 }
